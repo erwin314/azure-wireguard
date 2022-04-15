@@ -1,15 +1,18 @@
 # Intro
 
-This readme describes how to create a network in Azure with a VM that acts as a gateway to an onprem corporate network using a site-to-site vpn. The VM does not have any persistent disks. It will reimage itself every week, ensuring 'automatic' updates.
+This readme describes how to create a network in Azure with a WireGuard based gateway to an on premise corporate network. The gateway VM does not have any persistent disks. It will reimage itself every week, ensuring the usage of the latest Ubunutu image and packages.
 
-The following sections can be used to create all the parts needed to setup a corporate azure network which uses a WireGuard site-to-site vpn to connect to the onprem corporate network. 
+The following sections can be used to create all the parts needed.
 
 These environment variables are required by the following script fragments:
+```
 ONPREM_IPS: contains the ips of the peer network (on premise).
 AZURE_IPS: contains the ips of the virtual network (in Azure).
 SUBNET_IPS: subnet within AZURE_IPS.
 GATEWAY_IP: ip of the gateway vm within the SUBNET_IPS range.
+```
 
+Example:
 ```
 RESOURCEGROUP="corp-infra"
 ONPREM_IPS="10.19.76.0/22"
