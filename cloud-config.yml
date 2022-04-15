@@ -1,0 +1,46 @@
+#cloud-config
+
+packages:
+- wireguard
+
+write_files:
+- content: |
+    az login --identity
+    vmid=$(az resource list -n $(hostname) --query [].id -o tsv)
+    response=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.azure.com%2F' -H Metadata:true -s)
+    access_token=$(echo $response | python -c 'import sys, json; print (json.load(sys.stdin)["access_token"])')
+    curl -X POST -d "" -H "Authorization: Bearer ${access_token}" -H "Content-Type: application/json" https://management.azure.com${vmid}/reimage?api-version=2021-11-01
+  path: /usr/local/sbin/reimage.sh
+  permissions: '0755'
+
+# Note: Don't write files to /tmp from cloud-init use /run/somedir instead.
+# Early boot environments can race systemd-tmpfiles-clean LP: #1707222.
+runcmd:
+- echo "============ Init WireGuard ============"
+# Install Azure az cli
+- curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+# Login with az cli. For this to work, make sure the VM has a managed Identity.
+- az login --identity
+# Get the wireguard config (including the private key).
+# For this to work:
+# - There must be exactly one vault attached to the vm
+# - The Vault must use Azure role-based access control
+# - The managed identity has role "Reader" to find the vault 
+# - The managed identity has role "Key Vault Secrets User" to read the secret.
+- export VAULTNAME=$(az keyvault list --query "[0].name" -o tsv)
+- az keyvault secret show --name "wg0conf" --vault-name "${VAULTNAME}" --query "value" -o tsv > /etc/wireguard/wg0.conf
+- chmod 600 /etc/wireguard/wg0.conf
+# Enable WireGuard
+- wg-quick up wg0
+- systemctl enable wg-quick@wg0.service
+# Show info about the wg interface (for logging purposes)
+- wg show
+# Enable IP forwarding (let ubuntu function as a router)
+# Make sure you also enable this in Azure: network interface
+- echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+- sysctl -p
+# Reimage this VM every sunday at 01:00am UTC
+- (crontab -l 2>/dev/null; echo "0 1 * * 0 /usr/local/sbin/reimage.sh") | crontab -
+# Make sure no-one can get in.
+#- systemctl stop ssh
+#- systemctl disable ssh
