@@ -1,6 +1,6 @@
 # Intro
 
-This readme describes how to create a network in Azure with a WireGuard based gateway/router to an on premise corporate network. The gateway VM does not have any persistent disks. It will reimage itself every week, ensuring the usage of the latest linux image and packages.
+This readme describes how to create a network in Azure with a WireGuard based gateway/router to an on premise corporate network. The gateway VM does not have any persistent disks, instead the WireGuard configuration file is downloaded from a Key Vault during the reimageing process. The VM will reimage itself every week, ensuring the usage of the latest linux image and packages. 
 
 The following sections can be used to create all the parts needed.
 
