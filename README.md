@@ -1,6 +1,6 @@
 # Intro
 
-This readme describes how to create a network in Azure with a WireGuard based gateway to an on premise corporate network. The gateway VM does not have any persistent disks. It will reimage itself every week, ensuring the usage of the latest linux image and packages.
+This readme describes how to create a network in Azure with a WireGuard based gateway/router to an on premise corporate network. The gateway VM does not have any persistent disks. It will reimage itself every week, ensuring the usage of the latest linux image and packages.
 
 The following sections can be used to create all the parts needed.
 
@@ -103,12 +103,9 @@ az keyvault update --name ${VAULTNAME} --default-action Deny
 
 ## Create Gateway VM
 
-First we wil create the VM. The VM will immediatly start booting, which is unfortunate because the roles for the managed identity still need to be configured.
+First we wil create the VM. The VM will immediatly start booting, which is unfortunate because the roles for the managed identity still need to be configured. The VM uses the [cloud-config.yml](cloud-config.yml) file to setup the machine as a WireGuard gateway/router. It also configures a cronjob to reimage the VM every week. This ensures the VM is automatically updated.
 
-After the VM is created we can determine the managed identity and assign the correct roles. The VM may need to be reimaged if the roles are not assigned on time.
-
-The machine needs two roles on the vault. The "Reader" roll to find the vault id and the "Key Vault Secrets User" to read the wg0.conf file from the vault.
-The machine also needss a role on itself. The "Virtual Machine Contributer" role is needed to let the machine reimage itself. This ensures the machine is updated to the latests version every sunday 01:00am UTC.
+After the VM is created we can determine the managed identity and assign the correct roles. The VM may need to be reimaged if the roles are not assigned on time. The machine needs two roles on the vault. The "Reader" roll to find the vault id and the "Key Vault Secrets User" to read the wg0.conf file from the vault. The machine also needss a role on itself. The "Virtual Machine Contributer" role is needed to let the machine reimage itself.
 
 ```
 az vm create \
