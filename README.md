@@ -88,7 +88,9 @@ ME=$(az account show --query user.name -o tsv)
 az role assignment create --scope "${VAULTID}" --assignee "${ME}" --role "Key Vault Administrator" 
 ```
 
-You can set (or update) the WireGuard config file:
+Now you can set (or update) the WireGuard config file. The contents of the wg0.conf file depends on your infrastructure, see the [WireGuard config file docs](https://git.zx2c4.com/wireguard-tools/about/src/man/wg.8#CONFIGURATION%20FILE%20FORMAT) and [additional supported settings](https://git.zx2c4.com/wireguard-tools/about/src/man/wg-quick.8#EXAMPLES) for more information. Tip: If you do not want to configure a fixed public IP for the VM, use the Persistent Keepalive setting to force an initial handshake when the VM starts.
+
+Set or update the WireGuard config file:
 ```
 VAULTNAME=$(az keyvault list --resource-group ${RESOURCEGROUP} --query "[?tags.used_by_vmgateway01 == ''].name" -o tsv)
 az keyvault secret set --vault-name ${VAULTNAME} --name wg0conf --file wg0.conf
