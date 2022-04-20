@@ -107,8 +107,8 @@ First we wil create the VM. The VM will immediatly start booting, which is unfor
 
 After the VM is created we can determine the managed identity and assign the correct roles. The VM may need to be reimaged if the roles are not assigned on time.
 
-The machine needs two roles on the vault. The "Reader" roll to find the vault and the "Key Vault Secrets User" to read the wg0.conf file from the vault.
-The machine also needss a rol on itself. The "Virtual Machine Contributer" role is needed to let the machine reimage itself. This ensures the machine is updated to the latests version every sunday 01:00am UTC.
+The machine needs two roles on the vault. The "Reader" roll to find the vault id and the "Key Vault Secrets User" to read the wg0.conf file from the vault.
+The machine also needss a role on itself. The "Virtual Machine Contributer" role is needed to let the machine reimage itself. This ensures the machine is updated to the latests version every sunday 01:00am UTC.
 
 ```
 az vm create \
