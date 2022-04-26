@@ -6,7 +6,7 @@ Prerequisites you will need to provide yourself:
 - id_rsa.pub file containing your public ssh key (required for creation of the VM).
 - wg0.conf file containing the wireguard config (as used by the VM).
 
-The WireGuard config file containing the private key will be stored in a Key Vault. The network acl is set to the subnet that will contain the gateway vm. So only the VM can access the vault.
+The WireGuard config file containing the private key will be stored in a Key Vault. The Key Vault ACL is configured such that only the VM can access it.
 
 
 To check the default subscription used by the az cli run:
@@ -25,7 +25,7 @@ RESOURCEGROUP=infra-test
 az group create --name ${RESOURCEGROUP} --location "westeurope"
 ```
 
-Now create the virtual network with the WireGuard gateway. See the azure-wireguard.bicep for all parameters. 
+Now create the virtual network with the WireGuard gateway. See the [azure-wireguard.bicep](azure-wireguard.bicep) for all parameters. 
 For a basic test deploy run:
 ```
 az deployment group create --resource-group ${RESOURCEGROUP} --template-file azure-wireguard.bicep 
